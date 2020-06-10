@@ -14,13 +14,12 @@ namespace LinkShortner.Functions
     {
         [FunctionName("GetLink")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get" , Route = "{shortUrl}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get" , Route = "{shortUrl}")] HttpRequest req,
             string shortUrl,
             ILogger log)
         {
             try
             {
-
                 return new OkObjectResult(shortUrl);
             }
             catch (Exception ex)

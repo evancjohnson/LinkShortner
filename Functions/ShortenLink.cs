@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Reflection.Metadata.Ecma335;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.Azure.Cosmos.Table;
 
 namespace LinkShortner.Functions
 {
