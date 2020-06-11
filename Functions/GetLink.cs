@@ -7,6 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Microsoft.Azure.Cosmos.Table;
 
 namespace LinkShortner.Functions
 {
@@ -14,9 +15,9 @@ namespace LinkShortner.Functions
     {
         [FunctionName("GetLink")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get" , Route = "{shortUrl}")] HttpRequest req,
-            string shortUrl,
-            ILogger log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{shortUrl}")] HttpRequest req,
+            ILogger log,
+            string shortUrl)
         {
             try
             {
@@ -26,7 +27,7 @@ namespace LinkShortner.Functions
             {
                 var message = "Unable to Shorten Link. Please try again later.";
                 log.LogError(ex, $"{message} {ex.Message}");
-                return new BadRequestObjectResult(message);
+                return new RedirectResult("https://evancjohnson.com");
             }
         }
     }
