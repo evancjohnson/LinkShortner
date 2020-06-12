@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Reflection.Metadata.Ecma335;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.Azure.Cosmos.Table;
+using LinkShortner.Models;
+using LinkShortner.Code;
+using System.Net.Http;
 
 namespace LinkShortner.Functions
 {
@@ -17,14 +19,29 @@ namespace LinkShortner.Functions
     {
         [FunctionName("ShortenLink")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "ShortenLink/{longUrl}")] HttpRequest req,
-            string longUrl,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+            [Table("ShortUrl", Connection = "AzureWebJobsStorage")] CloudTable inputTable,
             ILogger log)
         {
             try
-            { 
+            {
+                string longUrl;
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                dynamic data = JsonConvert.DeserializeObject(requestBody);
+                longUrl = data?.longUrl;
 
-                return new OkObjectResult(longUrl);
+                if (string.IsNullOrEmpty(longUrl))
+                    return new BadRequestObjectResult("Unable to shorten null or whitesapce");
+
+                var newUrl = new LinkEntity("ShortUrl", RandomString.GetRandomString(6))
+                {
+                    LongUrl = longUrl,
+                    Clicks = 1
+                };
+
+                await StorageMethods.InsertLink(inputTable, newUrl, log);
+
+                return new OkObjectResult(newUrl.RowKey);
             }
             catch (Exception ex)
             {

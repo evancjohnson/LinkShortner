@@ -1,20 +1,16 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+using Microsoft.Azure.Cosmos.Table;
 
 namespace LinkShortner.Models
 {
-    public class LinkEntity : TableEntity
+    public class LinkEntity : Microsoft.Azure.Cosmos.Table.TableEntity
     {
+        public LinkEntity() { }
 
-        public LinkEntity(string partitionKey, string shortUrl) : base(partitionKey, shortUrl)
-        {
-            ShortUrl = shortUrl;
+        public LinkEntity(string partitionKey, string rowKey) : base(partitionKey, rowKey) { }
 
-        }
-        public string ShortUrl { get; set; }
         public string LongUrl { get; set; }
+
         public int Clicks { get; set; }
     }
 }
