@@ -33,7 +33,13 @@ namespace LinkShortner.Functions
                 //null check the url object
                 if (url != null)
                 {
-                    await queue.AddAsync(url.RowKey);
+                    var ip = req.HttpContext.Connection.RemoteIpAddress.ToString() ?? "Not Found";
+                    var ua = req.Headers["User-Agent"].ToString() ?? "Not Found";
+                    
+                    
+                    await queue.AddAsync($"{url.RowKey}|{ip}|{ua}");
+                    
+                    log.LogInformation($"Ip: {req.HttpContext.Request.Headers["X-Forwarded-For"]}");
                     return new RedirectResult(url.LongUrl);
                 }
                 else

@@ -61,5 +61,22 @@ namespace LinkShortner.Code
                 throw;
             }
         }
+
+        public static async Task InsertLinkClick(CloudTable table, LinkClickEntity entity, ILogger logger)
+        {
+            try
+            {
+                await table.CreateIfNotExistsAsync();
+
+                var mergeOperation = TableOperation.InsertOrMerge(entity);
+                var result = await table.ExecuteAsync(mergeOperation);
+            }
+            catch (Exception ex)
+            {
+                var message = $"Unable to insert LinkClick for IP: '{entity.IpAddress}' and UserAgent: '{entity.UserAgent}'";
+                logger.LogError(ex, message);
+                throw;
+            }
+        }
     }
 }
